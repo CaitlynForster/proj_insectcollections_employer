@@ -15,12 +15,95 @@ knitr::opts_chunk$set(echo = TRUE)
 - see if dietary choice is factore in collections being future
 - graph with responses about feelings
 - nature connection score calculation
-- nature connection link to choices around collectioing
+- nature connection link to choices around collecting
 - summary data: Age, Gender, field of work and industry, how many kill insects
 - summary graph of skills needed
-- how many think that insects collections are the furture/how many think we need alternatives
-- q40 feel freree to expand - not sure if word cloud or not - but need to mention DNA vs people thatr think secimens are needed
+- how many think that insects collections are the future/how many think we need alternatives
+- q40 feel free to expand - not sure if word cloud or not - but need to mention DNA vs people that think specimens are needed
 
+```{r library}
+
+library(dplyr)
+library(ggplot2)# for plots
+library(scales)#wrapping text in ggplot
+
+
+
+```
+
+
+```{r read csv}
+data <- read.csv("data.csv")
+
+
+```
+
+## Figure 1: how important are collections?
+
+```{r figure 1}
+
+##Make labels on x axis shorter
+q31_shorter <- data %>%
+  mutate(Q31 = recode(Q31, 
+                           "It doesn't matter if students have completed this assessment or not" 
+                      = "It doesn't matter \n if students have completed \nthis assessment or not",
+                      "It is a moderately important assessment"
+                      = "It is a moderately \n important assessment",
+                     "It is a very important assessment"
+                     =    "It is a very \n important assessment"),
+                        "NA"
+                    = "No resp"
+         )
+
+
+
+ggplot(data, aes(x = Q31)) +
+  geom_bar(fill = "aquamarine4", width = 0.5)+
+  labs(
+    x = "Importance of insect collections as assessments",
+    y = "Number of respondents"
+  ) +
+  scale_x_discrete(labels = label_wrap(10))+
+  scale_y_continuous(labels = label_wrap(10), expand = c(0,0), breaks = c(0, 2, 4, 6, 8, 10))+
+  theme_classic()
+```
+
+## Is there an effect of age on importance of the collections as assessments? 
+Based on Kruskall wallis, no.
+
+```{r stuff on age}
+
+#Summary of ages of people 
+
+summary((as.numeric(data$Q46)))
+
+
+#get the likert for q31 into an ordered number
+data$q31_likert_num <- as.numeric(factor(
+  data$Q31,
+  levels = c(
+    "It doesn't matter if students have completed this assessment or not", 
+    "It is a moderately important assessment", 
+    "It is a very important assessment"
+  ),
+  ordered = TRUE
+))
+
+
+#Spearman’s rank correlation (ρ) - vprrelation between age and importance of collections
+
+
+data$q46_num <- as.numeric(data$Q46)
+cor_test_age_importance<-cor.test(x=data$q46_num, y=data$q31_likert_num, method = 'spearman', use = "complete.obs")
+
+cor_test_age_importance
+
+### Kruskall wallis cause of issues with sample size (shouldnt really be significant)
+krus_test_age_importance <- kruskal.test(data$q46_num ~ data$q31_likert_num, data = data)
+krus_test_age_importance
+
+
+```
 
 
 
