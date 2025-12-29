@@ -90,7 +90,7 @@ data$q31_likert_num <- as.numeric(factor(
 ))
 
 
-#Spearman’s rank correlation (ρ) - vprrelation between age and importance of collections
+#Spearman’s rank correlation (ρ) - correlation between age and importance of collections
 
 
 data$q46_num <- as.numeric(data$Q46)
@@ -105,25 +105,40 @@ krus_test_age_importance
 
 ```
 
+## Is being vego more likely to make you want to change collections or do them at all?
+```{r stuff on vegos}
+## Importance of assessments
+chisq_vego_importance <- chisq.test(data$Q36, data$Q31)
 
-
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Sholuld assessment change
+chisq_vego_change <- chisq.test(data$Q36, data$Q29)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## Figure 2: Are Insects killed in your current Role
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r figure 2}
+
+ggplot(data, aes(x = Q16)) +
+  geom_bar(fill = "aquamarine4", width = 0.5)+
+  labs(
+    x = "Are Insects euthanised in your current role?",
+    y = "Number of respondents"
+  ) +
+  scale_x_discrete(labels = label_wrap(10))+
+  scale_y_continuous(labels = label_wrap(10), expand = c(0,0), breaks = c(0, 5, 10, 15, 20, 25))+
+  theme_classic()
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##Figure 3: Do you believe we should be considering other alternatives to insect collections as assessments for undergraduate students?
+```{r figure 3}
+data$Q29 = factor(data$Q29, levels = c("Definitely not", "Probably not", "Might or might not", "Probably yes", "Definitely yes", "No response"), ordered = TRUE)
+ggplot(data, aes(x = Q29)) +
+  geom_bar(fill = "aquamarine4", width = 0.5)+
+  labs(
+    x = "Should we consider alternative assessments to insect collections?",
+    y = "Number of respondents"
+  ) +
+  scale_x_discrete(labels = label_wrap(10))+
+  scale_y_continuous(labels = label_wrap(10), expand = c(0,0), breaks = c(0, 2, 4, 6, 8, 10))+
+  theme_classic()
+```
